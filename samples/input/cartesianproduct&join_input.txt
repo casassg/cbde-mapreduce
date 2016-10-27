@@ -1,0 +1,13 @@
+##IMPORTANT: replace username in table name with your username
+
+create 'usernameInput1', 'cf1'
+put 'usernameInput1', '201301011', 'cf1:attr1', '100'
+put 'usernameInput1', '201301021', 'cf1:attr1', '110'
+put 'usernameInput1', '201301031', 'cf1:attr1', '200'
+put 'usernameInput1', '201301041', 'cf1:attr1', '210'
+
+create 'usernameInput2', 'cf2'
+put 'usernameInput2', '201301012', 'cf2:attr2', '400'
+put 'usernameInput2', '201301022', 'cf2:attr2', '130'
+put 'usernameInput2', '201301042', 'cf2:attr2', '100'
+put 'usernameInput2', '201301032', 'cf2:attr2', '200'

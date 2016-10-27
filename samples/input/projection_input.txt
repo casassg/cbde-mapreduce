@@ -1,0 +1,7 @@
+##IMPORTANT: replace username in table name with your username
+
+create 'usernameInput', 'a', 'b'
+put 'usernameInput', 'key1', 'a:a', '1'
+put 'usernameInput', 'key1', 'b:b', '2'
+put 'usernameInput', 'key2', 'a:a', '3'
+put 'usernameInput', 'key2', 'b:b', '4'
