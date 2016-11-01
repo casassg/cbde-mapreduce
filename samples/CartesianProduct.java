@@ -34,7 +34,7 @@ public class CartesianProduct extends Configured implements Tool {
 
 //=================================================================== Main
         /* 
-            Explanation: Assume we want to do the cartesian product of tuples stored in two HBase tables (inputTable1 and inputTable2).             
+            Explanation: Assume we want to do the cartesian product of tuples stored in two HBase tables (leftInputTable and rightInputTable).
             
             First, the main method checks the call parameters. There must be 4:
             1.- First (external) HBase input table where to read data from (it must have been created beforehand, as we will see later)
@@ -194,13 +194,13 @@ public class CartesianProduct extends Configured implements Tool {
         ArrayList scans = new ArrayList();
 
         Scan scan1 = new Scan();
-        System.out.println("inputTable1: " + inputTable1);
+        System.out.println("leftInputTable: " + inputTable1);
 
         scan1.setAttribute("scan.attributes.table.name", Bytes.toBytes(inputTable1));
         scans.add(scan1);
 
         Scan scan2 = new Scan();
-        System.err.println("inputTable2: " + inputTable2);
+        System.err.println("rightInputTable: " + inputTable2);
         scan2.setAttribute("scan.attributes.table.name", Bytes.toBytes(inputTable2));
 
         scans.add(scan2);
