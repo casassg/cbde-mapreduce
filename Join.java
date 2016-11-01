@@ -123,11 +123,6 @@ public class Join extends Configured implements Tool {
         values.put("201301031", "200");
         values.put("201301041", "210");
         HTable table = new HTable(config, leftInputTable);
-        if (!table.getTableDescriptor().hasFamily(leftAttribute)) {
-            System.err.println("No matching attribute");
-            return 3;
-        }
-        //CHeck if attribute exists<- TODO
         for (String key : values.keySet()){
             Put put = new Put(Bytes.toBytes(key)); //creates a new row with key 'key1'
             put.add(Bytes.toBytes("cf1"), Bytes.toBytes("attr1"), Bytes.toBytes(values.get(key))); //Add an attribute named Attribute that belongs to the family Family with value Value
@@ -140,11 +135,6 @@ public class Join extends Configured implements Tool {
         values.put("201301042", "100");
         values.put("201301032", "200");
         table = new HTable(config, rightInputTable);
-        if (!table.getTableDescriptor().hasFamily(rightAttribute)) {
-            System.err.println("No matching attribute");
-            return 3;
-        }
-        //CHeck if attribute exists<- TODO
         for (String key : values.keySet()){
             Put put = new Put(Bytes.toBytes(key)); //creates a new row with key 'key1'
             put.add(Bytes.toBytes("cf2"), Bytes.toBytes(rightAttribute), Bytes.toBytes(values.get(key))); //Add an attribute named Attribute that belongs to the family Family with value Value
