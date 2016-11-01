@@ -189,7 +189,7 @@ public class Join extends Configured implements Tool {
         //Create a new MapReduce configuration object.
         Job job = new Job(HBaseConfiguration.create());
         //Set the MapReduce class
-        job.setJarByClass(CartesianProduct.class);
+        job.setJarByClass(Join.class);
         //Set the job name
         job.setJobName("Join");
         // To pass parameters to the mapper and reducer we must use the setStrings of the Configuration object
