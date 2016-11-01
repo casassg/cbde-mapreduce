@@ -19,7 +19,8 @@ import org.apache.hadoop.util.ToolRunner;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Vector;
-
+import java.util.HashMap;
+import java.util.Map;
 // HBase classes
 // Hadoop classes
 
@@ -118,21 +119,21 @@ public class CartesianProduct extends Configured implements Tool {
         values.put("201301031", "200");
         values.put("201301041", "210");
         HTable table = new HTable(config, inputTable1);
-        for (String key : values.keys()){
+        for (String key : values.keySet()){
             Put put = new Put(Bytes.toBytes(key)); //creates a new row with key 'key1'
-            put.add(Bytes.toBytes("cf1"), Bytes.toBytes("attr1"), Bytes.toBytes(values[key])); //Add an attribute named Attribute that belongs to the family Family with value Value
+            put.add(Bytes.toBytes("cf1"), Bytes.toBytes("attr1"), Bytes.toBytes(values.get(key))); //Add an attribute named Attribute that belongs to the family Family with value Value
             table.put(put); // Inserts data
         }
 
-        Map<String, String> values = new HashMap();
+        values = new HashMap();
         values.put("201301012", "400");
         values.put("201301022", "130");
         values.put("201301042", "100");
         values.put("201301032", "200");
-        HTable table = new HTable(config, inputTable1);
-        for (String key : values.keys()){
+        table = new HTable(config, inputTable2);
+        for (String key : values.keySet()){
             Put put = new Put(Bytes.toBytes(key)); //creates a new row with key 'key1'
-            put.add(Bytes.toBytes("cf2"), Bytes.toBytes("attr2"), Bytes.toBytes(values[key])); //Add an attribute named Attribute that belongs to the family Family with value Value
+            put.add(Bytes.toBytes("cf2"), Bytes.toBytes("attr2"), Bytes.toBytes(values.get(key))); //Add an attribute named Attribute that belongs to the family Family with value Value
             table.put(put); // Inserts data
         }
 
