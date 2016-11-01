@@ -188,7 +188,7 @@ public class Join extends Configured implements Tool {
         job.getConfiguration().setStrings("LeftA", leftAttribute);
         job.getConfiguration().setStrings("RightT", rightInputTable);
         job.getConfiguration().setStrings("RightA", rightAttribute);
-        job.getConfiguration().setInt("Hash", "10");
+        job.getConfiguration().setInt("Hash", 10);
         System.out.println("Hash = 10");
 
          /* Set the Map and Reduce function:
