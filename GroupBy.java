@@ -274,7 +274,7 @@ public class GroupBy extends Configured implements Tool {
                     attribute_value = attributes[k].split(":");
                     if (attribute_value[1].equals(aggregatte[0])) {
                         value += Integer.valueOf(attribute_value[2]);
-                        family = attribute_value[1];
+                        family = attribute_value[0];
                     }
 
                 }
@@ -283,7 +283,7 @@ public class GroupBy extends Configured implements Tool {
             }
             assert family != null;
             put = new Put(key.toString().getBytes());
-            put.addColumn(aggregatte[0].getBytes(), family.getBytes(), value.toString().getBytes());
+            put.addColumn( family.getBytes(), aggregatte[0].getBytes(),value.toString().getBytes());
             context.write(new Text(key), put);
         }
     }
