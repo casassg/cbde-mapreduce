@@ -175,17 +175,15 @@ public class Selection extends Configured implements Tool {
            String[] fam = context.getConfiguration().getStrings("family","empty");				   
            String[] val = context.getConfiguration().getStrings("SelectionValue","empty");				   
            
-           TableName tableNameB = currentSplit.getTable();
-           String tableName = tableNameB.getQualifierAsString();
            
 		   String[] FamilyColumn = new String[2];
            FamilyColumn[0] =  fam[0];
            FamilyColumn[1] =  col[0];
            String FamCol = new String(values.getValue(firstFamilyColumn[0].getBytes(),firstFamilyColumn[1].getBytes()));
 		   
-           if (FamCol.equals(value)){
+           if (FamCol.equals(val)){
                // We create a string as follows for each key: tableName#key;family:attributeValue
-               String tuple = tableName + "#" + rowId;
+               String tuple = "";
         	   KeyValue [] attributes = values.raw();
         	   String tuple = new String raw[0].getFamily()) + ":" + new String (raw[0].getValue));
                for (i = 0; i < attributes.length; i++) {
@@ -200,31 +198,20 @@ public class Selection extends Configured implements Tool {
        public static class Reducer extends TableReducer<Text, Text, Text> { 
 
           public void reduce(Text key, Iterable<Text> inputList, Context context) throws IOException, InterruptedException { 
-           Text outputKey = inputList.iterator().next();
 
-           // Create a tuple for the output table
-           Put put = new Put(outputKey.getBytes());
-           //Set the values for the columns
-           String[] attributes = context.getConfiguration().getStrings("attributes","empty");
-           String[] values = key.toString().split(";");
-           for (int i=0;i<attributes.length;i++) {			 
-   		     String[] familyColumn = new String[2];
-			 if (!attributes[i].contains(":")){
-			    //If only the column name is provided, it is assumed that both family and column names are the same
-				familyColumn[0] =  attributes[i];
-				familyColumn[1] =  attributes[i];
-			 }
-			 else {
-			    //Otherwise, we extract family and column names from the provided argument "family:column"
-				familyColumn = attributes[i].split(":");
-			 }				 
-			 			 
-             put.add(familyColumn[0].getBytes(), familyColumn[1].getBytes(), values[i].getBytes());
-           }
-           // Put the tuple in the output table
-           context.write(outputKey, put); 
-         } 
-
+          Iterator<Text> iterator = inputList.iterator();
+          while (inputList.iterator().hasNext()) {
+              // 'inputList' contains de rows that achieve the condition.
+              // Iterate for all of them adding in the output table.
+              Text outputKey = inputList.iterator().next();
+              Put put = new Put(key.getBytes());
+              for (String row : outputKey.toString().split(";")) {
+                  String[] values = row.split(":");
+                  // Adding the family, qualifier and the value respectively.
+                  put.add(values[0].getBytes(), values[0].getBytes(), values[1].getBytes());
+              }
+              // Write to output table.
+              context.write(outputKey, put);          
        } 
     }
 
