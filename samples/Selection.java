@@ -72,7 +72,7 @@ public class Selection extends Configured implements Tool {
 
          int tablesRight = checkIOTables(args);
          if (tablesRight==0) {
-           int ret = ToolRunner.run(new Projection(), args); 
+           int ret = ToolRunner.run(new Selection(), args); 
            System.exit(ret); 
          } else { 
            System.exit(tablesRight); 
@@ -133,7 +133,7 @@ public class Selection extends Configured implements Tool {
          //Retrive the configuration
          Job job = new Job(HBaseConfiguration.create());
          //Set the MapReduce class
-         job.setJarByClass(Projection.class);
+         job.setJarByClass(Selection.class);
          //Set the job name
          job.setJobName("Selection");
          //Create an scan object
@@ -142,7 +142,7 @@ public class Selection extends Configured implements Tool {
          
 
 		   String[] familyColumn = new String[2];
-		   if (!args[i].contains(":")){
+		   if (!args[2].contains(":")){
 			 //If only the column name is provided, it is assumed that both family and column names are the same
 			 familyColumn[0] = args[2];
 			 familyColumn[1] = args[2];
@@ -179,14 +179,13 @@ public class Selection extends Configured implements Tool {
 		   String[] FamilyColumn = new String[2];
            FamilyColumn[0] =  fam[0];
            FamilyColumn[1] =  col[0];
-           String FamCol = new String(values.getValue(firstFamilyColumn[0].getBytes(),firstFamilyColumn[1].getBytes()));
+           String FamCol = new String(values.getValue(FamilyColumn[0].getBytes(),FamilyColumn[1].getBytes()));
 		   
            if (FamCol.equals(val)){
-               // We create a string as follows for each key: tableName#key;family:attributeValue
-               String tuple = "";
+               // We create a string for each key
         	   KeyValue [] attributes = values.raw();
-        	   String tuple = new String raw[0].getFamily()) + ":" + new String (raw[0].getValue));
-               for (i = 0; i < attributes.length; i++) {
+        	   String tuple = new String (attributes[0].getFamily() + ":" + new String (attributes[0].getValue));
+               for (int i = 0; i < attributes.length; i++) {
                    tuple = tuple + ";" + new String(attributes[i].getFamily()) + ":" + new String(attributes[i].getQualifier()) + ":" + new String(attributes[i].getValue());
                    context.write(new Text(tuple), new Text(rowId)); 
                }
@@ -199,19 +198,21 @@ public class Selection extends Configured implements Tool {
 
           public void reduce(Text key, Iterable<Text> inputList, Context context) throws IOException, InterruptedException { 
 
-          Iterator<Text> iterator = inputList.iterator();
-          while (inputList.iterator().hasNext()) {
-              // 'inputList' contains de rows that achieve the condition.
-              // Iterate for all of them adding in the output table.
-              Text outputKey = inputList.iterator().next();
-              Put put = new Put(key.getBytes());
-              for (String row : outputKey.toString().split(";")) {
-                  String[] values = row.split(":");
-                  // Adding the family, qualifier and the value respectively.
-                  put.add(values[0].getBytes(), values[0].getBytes(), values[1].getBytes());
-              }
-              // Write to output table.
-              context.write(outputKey, put);          
-       } 
-    }
+	          Iterator<Text> iterator = inputList.iterator();
+	          while (inputList.iterator().hasNext()) {
+	              // 'inputList' contains de rows that achieve the condition.
+	              // Iterate for all of them adding in the output table.
+	              Text outputKey = inputList.iterator().next();
+	              Put put = new Put(key.getBytes());
+	              for (String row : outputKey.toString().split(";")) {
+	                  String[] values = row.split(":");
+	                  // Adding the family, qualifier and the value respectively.
+	                  put.add(values[0].getBytes(), values[0].getBytes(), values[1].getBytes());
+	              }
+	              // Write to output table.
+	              context.write(outputKey, put);          
+	          } 
+          }
+     }
+}
 
