@@ -27,6 +27,11 @@ import org.apache.hadoop.mapreduce.Reducer.Context;
 
 import org.apache.hadoop.hbase.KeyValue;
 import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Vector;
+import org.apache.hadoop.hbase.util.Bytes;
 
 public class Selection extends Configured implements Tool { 
        private static String inputTable;
