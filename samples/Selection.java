@@ -175,8 +175,6 @@ public class Selection extends Configured implements Tool {
 		     //Otherwise, we extract family and column names from the provided argument "family:column"
 			 familyColumn = args[2].split(":");
 		   }		  
-		   
-	       //scan.addColumn(familyColumn[0].getBytes(), familyColumn[1].getBytes());
          
          job.getConfiguration().setStrings("column",familyColumn[1]);
          job.getConfiguration().setStrings("family",familyColumn[0]);
@@ -231,7 +229,7 @@ public class Selection extends Configured implements Tool {
 	              for (String row : outputKey.toString().split(";")) {
 	                  String[] values = row.split(":");
 	                  // Adding the family, qualifier and the value respectively.
-	                  put.add(values[0].getBytes(), values[0].getBytes(), values[1].getBytes());
+	                  put.add(values[0].getBytes(), values[1].getBytes(), values[2].getBytes());
 	              }
 	              // Write to output table.
 	              context.write(outputKey, put);          
