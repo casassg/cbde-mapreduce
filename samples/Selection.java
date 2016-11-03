@@ -23,7 +23,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Reducer.Context;
 
-public class Projection extends Configured implements Tool { 
+public class Selection extends Configured implements Tool { 
        private static String inputTable;
        private static String outputTable;
 
@@ -64,7 +64,7 @@ public class Projection extends Configured implements Tool {
        
        public static void main(String[] args) throws Exception { 
          if (args.length<3) {
-           System.err.println("Parameters missing: 'inputTable outputTable [family:]attribute*'");
+           System.err.println("Parameters missing: 'inputTable outputTable [family:]attribute SelectionValue'");
 		   System.exit(1);
          }
          inputTable = args[0];
@@ -118,6 +118,9 @@ public class Projection extends Configured implements Tool {
          }
          // If you want to insert data do it here
          // -- Inserts
+         
+         
+         
          // -- Inserts           
          //Create the new output table
          hba.createTable(htdOutput);
@@ -127,33 +130,33 @@ public class Projection extends Configured implements Tool {
 //============================================================== Job config
        public int run(String [] args) throws Exception { 
          //Create a new job to execute
-
          //Retrive the configuration
          Job job = new Job(HBaseConfiguration.create());
          //Set the MapReduce class
          job.setJarByClass(Projection.class);
          //Set the job name
-         job.setJobName("Projection");
+         job.setJobName("Selection");
          //Create an scan object
          Scan scan = new Scan();
-         //Set the columns to scan and keep header to project
-         String header = "";
-         for(int i=2;i<args.length;i++) {		
+         
+         
+
 		   String[] familyColumn = new String[2];
 		   if (!args[i].contains(":")){
 			 //If only the column name is provided, it is assumed that both family and column names are the same
-			 familyColumn[0] =  args[i];
-			 familyColumn[1] =  args[i];
+			 familyColumn[0] = args[2];
+			 familyColumn[1] = args[2];
 		   }
 		   else {
 		     //Otherwise, we extract family and column names from the provided argument "family:column"
-			 familyColumn = args[i].split(":");
+			 familyColumn = args[2].split(":");
 		   }		  
 		   
-           scan.addColumn(familyColumn[0].getBytes(), familyColumn[1].getBytes());
-           header = header+","+args[i];
-         }
-         job.getConfiguration().setStrings("attributes",header);
+	       //scan.addColumn(familyColumn[0].getBytes(), familyColumn[1].getBytes());
+         
+         job.getConfiguration().setStrings("column",familyColumn[1]);
+         job.getConfiguration().setStrings("family",familyColumn[0]);
+         job.getConfiguration().setStrings("SelectionValue",args[3]);
          //Set the Map and Reduce function
          TableMapReduceUtil.initTableMapperJob(inputTable, scan, Mapper.class, Text.class, Text.class, job);
          TableMapReduceUtil.initTableReducerJob(outputTable, Reducer.class, job);
@@ -167,39 +170,30 @@ public class Projection extends Configured implements Tool {
        public static class Mapper extends TableMapper<Text, Text> { 
 
          public void map(ImmutableBytesWritable rowMetadata, Result values, Context context) throws IOException, InterruptedException { 
-           String tuple = "";
            String rowId = new String(rowMetadata.get(), "US-ASCII");
-           String[] attributes = context.getConfiguration().getStrings("attributes","empty");				   
-
-		   String[] firstFamilyColumn = new String[2];
-		   if (!attributes[0].contains(":")){
-		     //If only the column name is provided, it is assumed that both family and column names are the same
-			 firstFamilyColumn[0] =  attributes[0];
-			 firstFamilyColumn[1] =  attributes[0];
-		   }
-		   else {
-			 firstFamilyColumn = attributes[0].split(":");
-		   }		   		   
-           tuple = new String(values.getValue(firstFamilyColumn[0].getBytes(),firstFamilyColumn[1].getBytes()));
+           String[] col = context.getConfiguration().getStrings("column","empty");				   
+           String[] fam = context.getConfiguration().getStrings("family","empty");				   
+           String[] val = context.getConfiguration().getStrings("SelectionValue","empty");				   
+           
+           TableName tableNameB = currentSplit.getTable();
+           String tableName = tableNameB.getQualifierAsString();
+           
+		   String[] FamilyColumn = new String[2];
+           FamilyColumn[0] =  fam[0];
+           FamilyColumn[1] =  col[0];
+           String FamCol = new String(values.getValue(firstFamilyColumn[0].getBytes(),firstFamilyColumn[1].getBytes()));
 		   
-           for (int i=1;i<attributes.length;i++) {
-			 
-   		     String[] familyColumn = new String[2];
-			 if (!attributes[i].contains(":")){
-			    //If only the column name is provided, it is assumed that both family and column names are the same
-				familyColumn[0] =  attributes[i];
-				familyColumn[1] =  attributes[i];
-			 }
-			 else {
-			    //Otherwise, we extract family and column names from the provided argument "family:column"
-				familyColumn = attributes[i].split(":");
-			 }				 
-			 
-             tuple = tuple+";"+ new String(values.getValue(familyColumn[0].getBytes(),familyColumn[1].getBytes()));
+           if (FamCol.equals(value)){
+               // We create a string as follows for each key: tableName#key;family:attributeValue
+               String tuple = tableName + "#" + rowId;
+        	   KeyValue [] attributes = values.raw();
+        	   String tuple = new String raw[0].getFamily()) + ":" + new String (raw[0].getValue));
+               for (i = 0; i < attributes.length; i++) {
+                   tuple = tuple + ";" + new String(attributes[i].getFamily()) + ":" + new String(attributes[i].getQualifier()) + ":" + new String(attributes[i].getValue());
+                   context.write(new Text(tuple), new Text(rowId)); 
+               }
            }
-
-           context.write(new Text(tuple), new Text(rowId)); 
-         } 
+         }   
        } 
 
 //================================================================== Reducer       
