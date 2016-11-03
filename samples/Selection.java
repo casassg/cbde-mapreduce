@@ -13,6 +13,7 @@ import org.apache.hadoop.hbase.mapreduce.TableMapper;
 import org.apache.hadoop.hbase.mapreduce.TableReducer;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.client.Result;
+
 // Hadoop classes
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.hadoop.conf.Configured;
@@ -22,6 +23,10 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Reducer.Context;
+
+
+import org.apache.hadoop.hbase.KeyValue;
+import java.util.Iterator;
 
 public class Selection extends Configured implements Tool { 
        private static String inputTable;
