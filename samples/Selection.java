@@ -124,7 +124,21 @@ public class Selection extends Configured implements Tool {
          // If you want to insert data do it here
          // -- Inserts
          
-         
+         // Input
+         Map<String, String> values = new HashMap();
+         values.put("201301010", "100");
+         values.put("201301031", "190");
+         values.put("201301061", "210");
+         values.put("201301020", "50");
+         values.put("201301032", "200");
+         values.put("201301042", "210");
+         HTable table = new HTable(config, inputTable);
+         for (String key : values.keySet()) {
+             Put put = new Put(Bytes.toBytes(key)); //creates a new row with key 'key1'
+             put.add(Bytes.toBytes("cf1"), Bytes.toBytes("attr1"), Bytes.toBytes(values.get(key))); //Add an attribute named Attribute that belongs to the family Family with value Value
+             put.add(Bytes.toBytes("cf1"), Bytes.toBytes("attr2"), Bytes.toBytes(String.valueOf(Integer.valueOf(key) % 10))); //Add an attribute named Attribute that belongs to the family Family with value Value
+             table.put(put); // Inserts data
+         }
          
          // -- Inserts           
          //Create the new output table
@@ -189,7 +203,7 @@ public class Selection extends Configured implements Tool {
            if (FamCol.equals(val)){
                // We create a string for each key
         	   KeyValue [] attributes = values.raw();
-        	   String tuple = new String (attributes[0].getFamily() + ":" + new String (attributes[0].getValue));
+        	   String tuple = new String (attributes[0].getFamily() + ":" + new String (attributes[0].getValue());
                for (int i = 0; i < attributes.length; i++) {
                    tuple = tuple + ";" + new String(attributes[i].getFamily()) + ":" + new String(attributes[i].getQualifier()) + ":" + new String(attributes[i].getValue());
                    context.write(new Text(tuple), new Text(rowId)); 
